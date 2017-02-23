@@ -1,44 +1,60 @@
 #!/usr/bin/env python3
+"""Functions for working with cellular automata."""
+from typing import List
+from rules import RuleList
 
 
-def get_next_row(row, rule_dict):
-    """prec: collections.deque composed of 1s and 0s
-    postc: returns collections.deque with rules applied"""
-    scan_row = [0, 0]
-    scan_row.extend(row)
-    scan_row.extend([0,0])  # scan every group of 3, zer0 padded
+def get_next_row(row: str, rule: int=None, rule_dict: RuleList=None) -> str:
+    """Get next row of a 1D automaton.
 
+    Keyword arguments:
+    row -- string composed of 1s and 0s
+    rule -- rule between 0 and 255, inclusive
+    """
 
-    next_row = list()
+    # Allow passing of rule dictionary to save memory when computing many rows
+    if rule:
+        rule_dict = RuleList(rule).rules
+    if not rule_dict:
+        raise Exception("No rules passed!")
+
+    # If scanning the edge, we need two more cells to scan every group of 3
+    scan_row = '00' + row + '00'
+
+    next_row = ''
     next_row_length = len(row) + 2
 
     for pos in range(next_row_length):
-        local_three = ''.join(str(i) for i in scan_row[pos:pos + 3])
-        next_row.append(rule_dict[local_three.ljust(3, '0')])
+        local_three = scan_row[pos:pos + 3]
+        next_row += (rule_dict[local_three.ljust(3, '0')])
     return next_row
 
 
-def get_rows(first_row, rule_dict, number_of_rows):
-    row = first_row
-    rows = [row]
+def get_rows(first_row: str, rule: int, number_of_rows: int, pad_rows: bool=False) -> List:
+    """Get rows [0, number_of_rows] of a 1D automaton.
 
-    for _ in range(number_of_rows):
-        row = get_next_row(row, rule_dict)
-        rows.append(row)
+    Keyword arguments:
+    first_row -- string composed of 1s and 0s
+    rule -- rule between 0 and 255, inclusive
+    number_of_rows -- number of rows to get
+    pad_rows -- whether to pad list with zeros, making all elements the same length
 
-    for index, row in enumerate(rows):
-        rows[index] = ''.join(str(item) for item in row)
+    Returns list of length $number_of_rows as strings
+    """
 
-    # Pad with zeros. Disabled to save disk space.
-    # max_length = len(rows[-1])
-    # rows = ['{row:0^{max_length}}'.format(
-    #     row=row, max_length=max_length) for row in rows]
+    # So we don't have to create a new object each time
+    rule_dict = RuleList(rule).rules
 
-    return list(rows)
+    # Initialize list
+    rows = [first_row]
 
+    # (number_of_rows - 1) is so get_rows(..., 5) returns five rows
+    for _ in range(number_of_rows - 1):
+        rows.append(get_next_row(row=rows[-1], rule_dict=rule_dict))
 
-def string_to_bin(string):
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
-    as_int = [alphabet.index(char) for char in string]
-    as_bin = ["{0:08b}".format(integer) for integer in as_int]
-    return ''.join(as_bin)
+    if pad_rows:
+        longest_row_length = len(rows[-1])
+        rows = list('{row:0^{max_length}}'.format(
+            row=row, max_length=longest_row_length) for row in rows)
+
+    return rows
