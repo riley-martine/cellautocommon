@@ -1,3 +1,4 @@
+"""Setup.py for cellautocommon"""
 from setuptools import setup
 
 setup(name="cellautocommon",
@@ -8,4 +9,7 @@ setup(name="cellautocommon",
       author_email="riley.martine.0@gmail.com",
       license="MIT",
       packages=["cellautocommon"],
+      install_requires=[
+          "typing"
+      ],
       zip_safe=False)
