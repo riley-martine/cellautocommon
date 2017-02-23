@@ -8,6 +8,7 @@ class RuleList(object):
     """docstring for RuleList"""
 
     def __init__(self, rule):  # rules are in the form of a number from 0-255
+        self.rule = rule
         b_rule_string = format(rule, '08b')
         b_rule_list = [char for char in b_rule_string]
 
@@ -21,6 +22,9 @@ class RuleList(object):
             "001": b_rule_list[6],
             "000": b_rule_list[7]
         }
+
+    def __repr__(self):
+        return "RuleList({})".format(self.rule)
 
 
 BLOCK_RULE_LIST = {
