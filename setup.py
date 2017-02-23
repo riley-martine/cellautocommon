@@ -1,4 +1,5 @@
-"""Setup.py for cellautocommon"""
+"""Setup.py for cellautocommon."""
+
 from setuptools import setup
 
 setup(name="cellautocommon",
