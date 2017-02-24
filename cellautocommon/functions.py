@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Functions for working with cellular automata."""
 from typing import List
-from rules import RuleList
+from rulelist import RuleList
 
 
 def get_next_row(row: str, rule: int=None, rule_dict: RuleList=None) -> str:
